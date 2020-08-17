@@ -12,19 +12,26 @@ Version: TBD
 #include <regex>
 #include <string>
 #include <cstdlib>
+#include <sys/stat.h>
+#include <sys/types.h>
+//#include <bits/stdc++.h>
 
-const int max_Cap = 1000; // This variable defines the maximum power able to calculate.
+const int max_Cap = 10000; // This variable defines the maximum power able to calculate.
 unsigned long long int pascal_Triangle[max_Cap][max_Cap]; // Defines the array where the pascal triangle is going to be saved.
 
 // Defining functions
 int check_Power(std::string power_String); // Checks using Regex if the power indexed is a valid input.
 int create_Triangle(int power); // Though an algorithm creates the pascal triangle and saves it in the array.
 void create_Logs(); // Creates the logs of the program by text.
-void check_Value(); // For internal testing pourposes.
+void check_Value(int power); // For internal testing pourposes.
+int check_Folder_Creation(std::string folder_Name, int status);
+int check_Position(std::string position_String, int power);
 
 using namespace std;
 
 int main(){
+
+    /*
 
     // Defining main function variables
     string power_String;
@@ -32,6 +39,7 @@ int main(){
     int power;
 
     // Asks tot he user to input the power to be calculated
+    cout << "This program runs a Pascal Triangle algorithm to calculate up to 1000 power, this displays while saving the result in a array\n";
     cout << "Please Index up to the power number you want to calculate: ";
     cin >> power_String; // Reads the power indexed by the user and saves it as string.
     power = check_Power(power_String); // Calls to a custom function to verify the value indexed and saves it on power integer variable.
@@ -39,13 +47,14 @@ int main(){
     // Calls creating Pascal triangle function algorithm
     cout << "\nCreating Triangle... " << endl;
     create_Triangle(power);
-    //create_Logs();
+
+    */
+
+   create_Logs();
 
     return 0;
-
 }
  
-
  /*
  This function recieves the power indexed by the user as string and it validates it using regex.
  */
@@ -145,7 +154,7 @@ int create_Triangle(int power){
     }
 
     // Calls a void function wich allows to check any spot/value indexing 'X' and 'Y' positions. 
-    check_Value();
+    check_Value(power);
 
     return 0;
 
@@ -155,13 +164,59 @@ int create_Triangle(int power){
 This functions creates logs of the program and creates the Pascal Triangle in a text file.
 */
 void create_Logs(){
-    // To Be Developed.
+
+    int status;
+    string folder_Name;
+    string creation_Error = "Something has failed while creating folders please check permits.";
+    bool succed_Creation = 0;
+
+
+    status = system("mkdir -p ~/Pascal Triangle"); // Creating a directory
+    folder_Name = "Main Folder";
+
+    succed_Creation = check_Folder_Creation(folder_Name, status);
+    
+    if(succed_Creation == 1){
+
+        status = system("mkdir -p ~/Pascal Triangle/Logs"); // Creating a directory
+        folder_Name = "Logs Folder";
+
+        succed_Creation = check_Folder_Creation(folder_Name, status);
+
+        if(succed_Creation == 1){
+            status = system("mkdir -p ~/Pascal Triangle/Triangle"); // Creating a directory
+            folder_Name = "Triangle Folder";
+
+            check_Folder_Creation(folder_Name, status);
+
+        }
+        else{
+            cout << creation_Error << endl;
+            } 
+    }
+    else{
+        cout << creation_Error << endl;
+    }
+    
+}
+
+int check_Folder_Creation(std::string folder_Name, int status){
+    if (status == -1){
+        cerr << "Error : " << strerror(errno) << " While creating " << folder_Name << endl;
+        return 0;
+    }
+    else{
+        cout << folder_Name << " Directory has been created" << endl;
+        return 1;
+    }
+
+    
 }
 
 /*
 Function who checks any spot/value as long the user index 'x' & 'y' coordinates
 */
-void check_Value(){
+void check_Value(int power){
 
     char answer;
 
@@ -170,13 +225,17 @@ void check_Value(){
 
     while (answer == 'Y' || answer == 'y'){
 
-        int x_Position, y_Position;
+        string x_Position_String, y_Position_String;
+        int x_Position_Integer, y_Position_Integer;
 
         // Reads coordianates to check
         cout << "\nIndex position X to check: " ;
-        cin >> x_Position;
+        cin >> x_Position_String;
+        x_Position_Integer = check_Position(x_Position_String, power);
+
         cout << "\nIndex position Y to check: " ;
-        cin >> y_Position;
+        cin >> y_Position_String;
+        y_Position_Integer = check_Position(y_Position_String, power);
 
         // Prints out the position requested and asks if the user wants to check any other position. 
         cout << "\n Position [" << x_Position << "][" << y_Position <<"] = " << pascal_Triangle[x_Position][y_Position] << endl;
@@ -184,3 +243,45 @@ void check_Value(){
         cin >> answer;
     }
 }
+
+/*
+
+Working in this code below >>>:
+
+int check_Position(std::string position_String, int power){
+
+    // Valid_Position, it's a flag wich allows to end the validation when it becomes true 
+    bool valid_Position = false;
+    int position_Integer;
+
+    while(valid_Position == false){
+        // Condition wich means if it's a number...
+        if( regex_match(position, regex("^[0-9]{1,}") )){ 
+                int position_Integer = stoi(position_String);
+
+                // If it's a number then check if it's not 0 or greater than max cap pre-defined, fits both conditions then it sets the valid power flags true and function returns the power.
+                if ( ( position_Integer <= power) && (position_Integer >= 0) ){
+                    cout << "Position Integer: "<< position_Integer << endl;
+                    valid_Power = true;
+                    return power;
+                }
+                // In case don't fit any of both conditions of max cap or zero, then check each case and displays a error message.
+                else{
+                    if(Position_Integer > power){
+                    cout << "The power Indexed is greater than max capacity allowed: \a" << max_Cap << endl;
+                    }
+                    if(power == 0){
+                    cout << "If the power is equal to 0 the result is 1: \a" << endl;
+                    }
+                }
+        }
+        // If is not a number sends a message and asks to index again.
+        else{
+            cout << "The power Indexed is not a number \a" << endl;
+        }
+        cout << "\nPlease index the power again: ";
+        cin >> power_String;
+
+}
+
+*/
