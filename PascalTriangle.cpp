@@ -22,10 +22,11 @@ unsigned long long int pascal_Triangle[max_Cap][max_Cap]; // Defines the array w
 // Defining functions
 int check_Power(std::string power_String); // Checks using Regex if the power indexed is a valid input.
 int create_Triangle(int power); // Though an algorithm creates the pascal triangle and saves it in the array.
-void create_Logs(); // Creates the logs of the program by text.
+void create_Logs(); // Creates the logs of the program by text. 
 void check_Value(int power); // For internal testing pourposes.
 int check_Folder_Creation(std::string folder_Name, int status);
 int check_Position(std::string position_String, int power);
+void checkWindows(); // Sends a reminder message for logs are no available on windows, if detects any Windows version running this program.
 
 using namespace std;
 
@@ -39,7 +40,8 @@ int main(){
     int power;
 
     // Asks tot he user to input the power to be calculated
-    cout << "This program runs a Pascal Triangle algorithm to calculate up to 1000 power, this displays while saving the result in a array\n";
+    cout << "This program runs a Pascal Triangle algorithm to calculate up to 1000 power,\n this displays while saving the result in a array\n";
+    checkWindows();
     cout << "Please Index up to the power number you want to calculate: ";
     cin >> power_String; // Reads the power indexed by the user and saves it as string.
     power = check_Power(power_String); // Calls to a custom function to verify the value indexed and saves it on power integer variable.
@@ -171,20 +173,20 @@ void create_Logs(){
     bool succed_Creation = 0;
 
 
-    status = system("mkdir -p ~/Pascal Triangle"); // Creating a directory
+    status = system("mkdir -p ~/PascalTriangle"); // Creating a directory
     folder_Name = "Main Folder";
 
     succed_Creation = check_Folder_Creation(folder_Name, status);
     
     if(succed_Creation == 1){
 
-        status = system("mkdir -p ~/Pascal Triangle/Logs"); // Creating a directory
+        status = system("mkdir -p ~/PascalTriangle/Logs"); // Creating a directory
         folder_Name = "Logs Folder";
 
         succed_Creation = check_Folder_Creation(folder_Name, status);
 
         if(succed_Creation == 1){
-            status = system("mkdir -p ~/Pascal Triangle/Triangle"); // Creating a directory
+            status = system("mkdir -p ~/PascalTriangle/Triangle"); // Creating a directory
             folder_Name = "Triangle Folder";
 
             check_Folder_Creation(folder_Name, status);
@@ -225,7 +227,7 @@ void check_Value(int power){
 
     while (answer == 'Y' || answer == 'y'){
 
-        string x_Position_String, y_Position_String;
+        std::string x_Position_String, y_Position_String;
         int x_Position_Integer, y_Position_Integer;
 
         // Reads coordianates to check
@@ -238,15 +240,17 @@ void check_Value(int power){
         y_Position_Integer = check_Position(y_Position_String, power);
 
         // Prints out the position requested and asks if the user wants to check any other position. 
-        cout << "\n Position [" << x_Position << "][" << y_Position <<"] = " << pascal_Triangle[x_Position][y_Position] << endl;
+        cout << "\n Position [" << x_Position_Integer << "][" << y_Position_Integer <<"] = " << pascal_Triangle[x_Position_Integer][y_Position_Integer] << endl;
         cout << "Do you want to check any other position? Y/N ";
         cin >> answer;
     }
 }
 
-/*
-
-Working in this code below >>>:
+void checkWindows(){
+    #ifdef _WIN32
+        cout << "\n\aPlease note logs are only created for linux based file management systems" << endl;
+    #endif
+}
 
 int check_Position(std::string position_String, int power){
 
@@ -255,33 +259,33 @@ int check_Position(std::string position_String, int power){
     int position_Integer;
 
     while(valid_Position == false){
+
         // Condition wich means if it's a number...
-        if( regex_match(position, regex("^[0-9]{1,}") )){ 
+        if( regex_match(position_String, regex("^[0-9]{1,}") )){ 
                 int position_Integer = stoi(position_String);
 
                 // If it's a number then check if it's not 0 or greater than max cap pre-defined, fits both conditions then it sets the valid power flags true and function returns the power.
                 if ( ( position_Integer <= power) && (position_Integer >= 0) ){
                     cout << "Position Integer: "<< position_Integer << endl;
-                    valid_Power = true;
-                    return power;
+                    valid_Position = true;
+                    return position_Integer;
                 }
+
                 // In case don't fit any of both conditions of max cap or zero, then check each case and displays a error message.
                 else{
-                    if(Position_Integer > power){
+                    if(position_Integer > power){
                     cout << "The power Indexed is greater than max capacity allowed: \a" << max_Cap << endl;
-                    }
-                    if(power == 0){
-                    cout << "If the power is equal to 0 the result is 1: \a" << endl;
                     }
                 }
         }
         // If is not a number sends a message and asks to index again.
         else{
-            cout << "The power Indexed is not a number \a" << endl;
+            cout << "The position Indexed is not a number! \a" << endl;
         }
-        cout << "\nPlease index the power again: ";
-        cin >> power_String;
+        cout << "\nPlease index the position again: ";
+        cin >> position_String;
 
-}
+    }
 
-*/
+    return 0;
+} 
